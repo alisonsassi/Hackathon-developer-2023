@@ -10,14 +10,6 @@ app = FastAPI(
     version="1.0",
 )
 
-@app.get("/", 
-         description="Esta rota retorna informações gerais.", 
-         tags=["Azure DevOps Automation"]
-         )
-async def info_root():
-    return {"message": "Acesse /docs para visualizar a documentação."}
-
-
 @app.get("/workitems",
          tags=["Azure DevOps Automation"]
          )
@@ -46,13 +38,18 @@ def get_workitems():
             return_acceptance_criteria = work_item.fields.get('Microsoft.VSTS.Common.AcceptanceCriteria', '')
             acceptance_criteria = remover_caracteres_html(return_acceptance_criteria)
         except KeyError:
-            acceptance_criteria = "Campo não encontrado"
+            acceptance_criteria = ""
+
+        try:
+            description = remover_caracteres_html(work_item.fields['System.Description'])
+        except KeyError:
+            description = ""
 
         result = {"id": work_item.id, 
                   "title": work_item.fields['System.Title'],
-                  "description": remover_caracteres_html(work_item.fields['System.Description']),
+                  "description": description,
                   "workItemType": work_item.fields['System.WorkItemType'],
-                  "acceptance_criteria": remover_caracteres_html(acceptance_criteria)
+                  "acceptance_criteria": acceptance_criteria
                   }
         results.append(result)
 
@@ -87,6 +84,7 @@ async def get_user_story_description(work_item_id: int):
         
         description = work_item.fields['System.Description']
         description_text = remover_caracteres_html(description)
+
         return description_text
 
     except Exception as e:
@@ -110,10 +108,9 @@ async def update_criteria_accept(work_item_id: int, new_criteria_accept: str):
 
     acceptance_criteria = work_item.fields.get('Microsoft.VSTS.Common.AcceptanceCriteria')
 
-
-    # Adicione a lógica para validar se "criteria_accept" está vazio e, se sim, atualize o campo
     if acceptance_criteria is None:
         # Crie uma operação de patch para atualizar o campo
+        print()
         patch_operation = JsonPatchOperation(
             op= "replace",
             path= f"/fields/Microsoft.VSTS.Common.AcceptanceCriteria",
@@ -126,12 +123,14 @@ async def update_criteria_accept(work_item_id: int, new_criteria_accept: str):
             id=work_item.id
         )
         print(response)
-
-        if response.status_code == 200:
+    else:
+        return (f"Falha ao atualizar o campo AcceptanceCriteria. Código de status: {response.status_code} {response.text}")
+        '''if response.status_code == 200:
             return (f"Campo AcceptanceCriteria atualizado com sucesso para {new_criteria_accept}")
         else:
             return (f"Falha ao atualizar o campo AcceptanceCriteria. Código de status: {response.status_code} {response.text}")
-
+        '''
+        return new_criteria_accept
 
 def remover_caracteres_html(texto_html):
     soup = BeautifulSoup(texto_html, "html.parser")
@@ -144,3 +143,8 @@ def remover_caracteres_html(texto_html):
         texto_tratado = texto_sem_html
 
     return texto_tratado
+
+
+if __name__ == "__main__":
+    import uvicorn
+    uvicorn.run(app, host="161.83.50.198", port=8765)
