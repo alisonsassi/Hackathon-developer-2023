@@ -176,8 +176,9 @@ def openIArefactory(description):
 
     client = OpenAI(api_key=OpenIA.api_key)
     
-    EnsinaChat1 = "Quero que a resposta a cada topico inicie com as tags <div> para que o texto seja utilizado em uma pagina HTML de forma dinamica"
+    EnsinaChat1 = "Quero que a resposta a cada topico inicie com as tags <div>, deixe a os centarios destacados em negrito, e os criterios de cada topico iniciados com um paragrafo para que o texto seja utilizado em uma pagina HTML de forma dinamica"
     EnsinaChat3 = "crie 2 cenarios, com 5 criterios de aceite para desenvolvimento cada, para a mensagem a seguir:"
+
     mensagem = description
     
     completion = client.chat.completions.create(
