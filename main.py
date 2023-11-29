@@ -142,11 +142,8 @@ async def update_criteria_accept(work_item_id: int):
 
     if acceptance_criteria is None or acceptance_criteria.strip() == '':
 
-        return_text = openIArefactory(work_item.fields['System.Description'])
-        print(return_text)
-        new_criteria_accept = formatar_texto_html(return_text)
-        separador = "f'<div>\n\n----------------------------\n\n</div>'"
-        texto_final = f"{return_text}{separador}{new_criteria_accept}"
+        new_criteria_accept = openIArefactory(work_item.fields['System.Description'])
+        #new_criteria_accept = formatar_texto_html(return_text)
 
         patch_operation = JsonPatchOperation(
             op= "replace",
@@ -179,18 +176,20 @@ def openIArefactory(description):
 
     client = OpenAI(api_key=OpenIA.api_key)
     
-    EnsinaChat = "Criar com a mensagem a seguir, os 10 principais criterios de aceites para a solicitação a seguir:"
+    EnsinaChat1 = "Quero que a resposta a cada topico inicie com as tags <div> para que o texto seja utilizado em uma pagina HTML de forma dinamica"
+    EnsinaChat3 = "crie 2 cenarios, com 5 criterios de aceite para desenvolvimento cada, para a mensagem a seguir:"
     mensagem = description
     
     completion = client.chat.completions.create(
     model="gpt-3.5-turbo",
     messages=[
-        {"role": "system", "content": EnsinaChat},
+        {"role": "system", "content": EnsinaChat1},
+        {"role": "system", "content": EnsinaChat3},
         {"role": "user", "content": mensagem}
     ]
     )
     return completion.choices[0].message.content
-'''
+
 def formatar_texto_html(texto):
     numeros = [str(i) for i in range(1, 16)]
 
@@ -200,13 +199,4 @@ def formatar_texto_html(texto):
 
     texto_formatado = f'{texto}'
 
-    return texto_formatado
-'''
-def formatar_texto(texto):
-    # Substitui números e pontos por uma quebra de linha
-    texto_formatado = texto.replace('1.', '\n1.').replace('2.', '\n2.').replace('3.', '\n3.').replace('4.', '\n4.')\
-        .replace('5.', '\n5.').replace('6.', '\n6.').replace('7.', '\n7.').replace('8.', '\n8.').replace('9.', '\n9.')\
-        .replace('10.', '\n10.').replace('11.', '\n11.').replace('12.', '\n12.').replace('13.', '\n13.')\
-        .replace('14.', '\n14.').replace('15.', '\n15.')
-    
     return texto_formatado
