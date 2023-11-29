@@ -14,3 +14,5 @@ def get_azure_devops_connection():
     credentials = BasicAuthentication('', personal_access_token)
     connection = Connection(base_url=organization_url, creds=credentials)
     return connection
+class OpenIA:
+    api_key = "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"
