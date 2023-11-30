@@ -3,9 +3,12 @@ from azure.devops.connection import Connection
 from msrest.authentication import BasicAuthentication
 
 class AzureConfig:
-    org_url = 'https://dev.azure.com/Defects'
-    token = '6gjcv6otnnav3nmxz5tzacn3boefw65aacnzpk5yelanxkth4b5a'
-    project_id = 'DefectsDoubtsAgile'
+    org_url = 'YOUR_URL_ORGANIZATION_OF_AZURE'
+    token = 'YOUR_TOKEN_OF_AZURE'
+    project_id = 'PROJECT_OF_AZURE'
+
+# org_url = 'https://dev.azure.com/Defects'
+# project_id = 'DefectsDoubtsAgile'
 
 
 def get_azure_devops_connection():
@@ -15,4 +18,4 @@ def get_azure_devops_connection():
     connection = Connection(base_url=organization_url, creds=credentials)
     return connection
 class OpenIA:
-    api_key = "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"
+    api_key = "YOUR_TOKEN_OF_OPENAI"
